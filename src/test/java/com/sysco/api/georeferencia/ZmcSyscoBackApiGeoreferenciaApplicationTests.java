@@ -1,0 +1,13 @@
+package com.sysco.api.georeferencia;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class ZmcSyscoBackApiGeoreferenciaApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}

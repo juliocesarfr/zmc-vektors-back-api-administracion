@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: sysco-api-georeferencia
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  session:
+    jdbc.initialize-schema: always
+    store-type: jdbc
+    timeout: 900
+
+server:
+  port: 8845
+
+openapi:
+  service:
+    title: Georeferencia Sysco Services
+    version: 1.0.0
+    url: http://localhost:8889
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /webjars/swagger-ui/4.15.5/index.html
+
