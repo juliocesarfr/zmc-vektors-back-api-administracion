@@ -1,6 +1,6 @@
 spring:
   application:
-    name: sysco-api-georeferencia
+    name: vektors-api-georeferencia
   servlet:
     multipart:
       max-file-size: 10MB
