@@ -1,6 +1,5 @@
 package com.sysco.api.georeferencia.app.repositorio;
 
-
 import com.sysco.api.georeferencia.app.config.IGenericRepo;
 import com.sysco.api.georeferencia.app.dto.lecturas.FiltroLecturasRequest;
 import com.sysco.api.georeferencia.app.dto.lecturas.MeterReadingSector;
@@ -12,10 +11,11 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+
 @Repository
 public class LecturasRepositorio extends IGenericRepo implements ILecturas {
+
     @Override
     public List<MeterReadingSector> listarLecturas(FiltroLecturasRequest filtro, validar_login userLogin) {
         try {
@@ -65,13 +65,31 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                 },
                 rs -> {
                     coords.put(rs.getLong("codcliente"),
-                            new double[]{ rs.getDouble("lon"), rs.getDouble("lat") });
+                            new double[]{
+                                    rs.getDouble("lon"), rs.getDouble("lat"),
+                                    rs.getDouble("x_ficha"), rs.getDouble("y_ficha"),
+                                    rs.getDouble("x_agua"), rs.getDouble("y_agua"),
+                                    rs.getDouble("x_desague"), rs.getDouble("y_desague")
+                            });
                 });
 
         lecturas.forEach(l -> {
             if (l.getCodcliente() == null) return;
             double[] xy = coords.get(l.getCodcliente().longValue());
-            if (xy != null) { l.setLon(xy[0]); l.setLat(xy[1]); }
+
+            if (xy != null) {
+                l.setLon(xy[0]);
+                l.setLat(xy[1]);
+
+                l.setLonpredio(xy[2]);
+                l.setLatpredio(xy[3]);
+
+                l.setLonagua(xy[4]);
+                l.setLatagua(xy[5]);
+
+                l.setLondesague(xy[6]);
+                l.setLatdesague(xy[7]);
+            }
         });
     }
 
@@ -82,5 +100,4 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
             return null;
         }
     }
-
 }

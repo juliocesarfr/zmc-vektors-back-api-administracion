@@ -103,7 +103,14 @@ public class MeterReadingSector {
     private Integer lecimpedimento;
 
 
-    //nuevo
+    //postgresql
     private Double lon;
     private Double lat;
+    private Double lonpredio;
+    private Double latpredio;
+    private Double lonagua;
+    private Double latagua;
+    private Double londesague;
+    private Double latdesague;
+
 }
