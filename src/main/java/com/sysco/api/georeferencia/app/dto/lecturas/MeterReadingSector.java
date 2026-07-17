@@ -112,5 +112,9 @@ public class MeterReadingSector {
     private Double latagua;
     private Double londesague;
     private Double latdesague;
+    private Double lonacometidaagua;
+    private Double latacometidaagua;
+    private Double lonacometidadesague;
+    private Double latacometidadesague;
 
 }

@@ -56,7 +56,7 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
 
         if (codigos.length == 0) return;
 
-        Map<Long, double[]> coords = new HashMap<>();
+        Map<Long, Double[]> coords = new HashMap<>();
         this.jTemplateGIS().query(
                 "SELECT * FROM fn_coordenadas_por_clientes(?)",
                 ps -> {
@@ -65,17 +65,19 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                 },
                 rs -> {
                     coords.put(rs.getLong("codcliente"),
-                            new double[]{
-                                    rs.getDouble("lon"), rs.getDouble("lat"),
-                                    rs.getDouble("x_ficha"), rs.getDouble("y_ficha"),
-                                    rs.getDouble("x_agua"), rs.getDouble("y_agua"),
-                                    rs.getDouble("x_desague"), rs.getDouble("y_desague")
+                            new Double[]{
+                                    rs.getObject("lon", Double.class), rs.getObject("lat", Double.class),
+                                    rs.getObject("x_ficha", Double.class), rs.getObject("y_ficha", Double.class),
+                                    rs.getObject("x_agua", Double.class), rs.getObject("y_agua", Double.class),
+                                    rs.getObject("x_desague", Double.class), rs.getObject("y_desague", Double.class),
+                                    rs.getObject("x_aco_agua", Double.class), rs.getObject("y_aco_agua", Double.class),
+                                    rs.getObject("x_aco_alc", Double.class), rs.getObject("y_aco_alc", Double.class)
                             });
                 });
 
         lecturas.forEach(l -> {
             if (l.getCodcliente() == null) return;
-            double[] xy = coords.get(l.getCodcliente().longValue());
+            Double[] xy = coords.get(l.getCodcliente().longValue());
 
             if (xy != null) {
                 l.setLon(xy[0]);
@@ -89,6 +91,12 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
 
                 l.setLondesague(xy[6]);
                 l.setLatdesague(xy[7]);
+
+                l.setLonacometidaagua(xy[8]);
+                l.setLatacometidaagua(xy[9]);
+
+                l.setLonacometidadesague(xy[10]);
+                l.setLatacometidadesague(xy[11]);
             }
         });
     }
