@@ -46,6 +46,30 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
         }
     }
 
+    public MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin) {
+        try {
+            String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?";
+
+            List<MeterReadingSector> lecturas = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(MeterReadingSector.class),
+                    userLogin.getCodempdefault(),
+                    codsuc,
+                    anio,
+                    mes,
+                    nroSuministro);
+
+            if (!lecturas.isEmpty()) {
+                asignarCoordenadas(lecturas);
+                return lecturas.get(0);
+            }
+
+            return null;
+
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage());
+        }
+    }
+
     private void asignarCoordenadas(List<MeterReadingSector> lecturas) throws Exception {
         Long[] codigos = lecturas.stream()
                 .map(MeterReadingSector::getCodcliente)

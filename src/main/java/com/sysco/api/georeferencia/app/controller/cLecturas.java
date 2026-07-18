@@ -1,5 +1,6 @@
 package com.sysco.api.georeferencia.app.controller;
 
+import com.sysco.api.georeferencia.app.dto.lecturas.BuscarLecturaRequest;
 import com.sysco.api.georeferencia.app.dto.lecturas.FiltroLecturasRequest;
 import com.sysco.api.georeferencia.app.dto.lecturas.MeterReadingSector;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
@@ -34,6 +35,24 @@ public class cLecturas {
                 .flatMap(userLogin -> this.service.listarLecturas(filtro, userLogin))
                 .flatMap(GenericoExcepcion::success)
                 .doOnSuccess(response -> log.info("Operación exitosa"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/lecturas/buscar")
+    public Mono<ResponseEntity<response_generic<MeterReadingSector>>> buscarLectura(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarLecturaRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarLecturaPorSuministro(
+                        request.getCodsuc(),
+                        request.getAnio(),
+                        request.getMes(),
+                        request.getNroSuministro(),
+                        userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Lectura encontrada"))
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }
