@@ -101,9 +101,21 @@ public class MeterReadingSector {
     private String latitud,longitud;
     private String fasignacionleccampo;
     private Integer lecimpedimento;
+   //nuevo
+     private String situacion; //ENVIADO/ PENDIENTE /SIN RECIBIR
 
-
-    //nuevo
+    //postgresql
     private Double lon;
     private Double lat;
+    private Double lonpredio;
+    private Double latpredio;
+    private Double lonagua;
+    private Double latagua;
+    private Double londesague;
+    private Double latdesague;
+    private Double lonacometidaagua;
+    private Double latacometidaagua;
+    private Double lonacometidadesague;
+    private Double latacometidadesague;
+
 }

@@ -1,7 +1,6 @@
 package com.sysco.api.georeferencia.app.controller;
 
-import com.sysco.api.georeferencia.app.dto.lecturas.FiltroLecturasRequest;
-import com.sysco.api.georeferencia.app.dto.lecturas.MeterReadingSector;
+import com.sysco.api.georeferencia.app.dto.lecturas.*;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
 import com.sysco.api.georeferencia.app.seguridad.tokens_webflux;
 import com.sysco.api.georeferencia.app.servicios.LecturasService;
@@ -37,4 +36,49 @@ public class cLecturas {
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }
+
+    @PostMapping("/lecturas/buscar")
+    public Mono<ResponseEntity<response_generic<MeterReadingSector>>> buscarLectura(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarLecturaRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarLecturaPorSuministro(
+                        request.getCodsuc(),
+                        request.getAnio(),
+                        request.getMes(),
+                        request.getNroSuministro(),
+                        userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Lectura encontrada"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/lecturas/resumentomalectura_xinspectore")
+    public Mono<ResponseEntity<response_generic<List<ListadoresumenXinspector>>>> resumentomalectura_xinspectore(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody Filtroresumenxinspector filtro
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.resumentomalectura_xinspectore(filtro, userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/lecturas/detalletomalectura_xinspector")
+    public Mono<ResponseEntity<response_generic<List<MeterReadingSector>>>> detalletomalectura_xinspector(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody Filtrodetalletomalectura_xinspector filtro
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.detalletomalectura_xinspector(filtro, userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
 }
