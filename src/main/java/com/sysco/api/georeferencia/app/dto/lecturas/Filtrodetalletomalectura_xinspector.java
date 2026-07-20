@@ -7,9 +7,11 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BuscarLecturaRequest {
+public class Filtrodetalletomalectura_xinspector {
+    private String codciclo;
     private String codsuc;
+    private String codsector;      // '%' = todos
     private String anio;
     private String mes;
-    private Integer nroSuministro;
+    private String codinspector;
 }

@@ -1,8 +1,7 @@
 package com.sysco.api.georeferencia.app.repositorio;
 
 import com.sysco.api.georeferencia.app.config.IGenericRepo;
-import com.sysco.api.georeferencia.app.dto.lecturas.FiltroLecturasRequest;
-import com.sysco.api.georeferencia.app.dto.lecturas.MeterReadingSector;
+import com.sysco.api.georeferencia.app.dto.lecturas.*;
 import com.sysco.api.georeferencia.app.excepciones.RepositorioExcepcion;
 import com.sysco.api.georeferencia.app.interfaces.lecturas.ILecturas;
 import com.zmc.sysco.master.clases.dto.validar_login;
@@ -46,6 +45,51 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
         }
     }
 
+    @Override
+    public List<ListadoresumenXinspector> resumentomalectura_xinspectore(Filtroresumenxinspector filtro, validar_login userLogin) {
+        try {
+            String query = "exec dbo.usp_vektors_resumentomalectura_xinspectores ?,?,?,?,?,?";
+
+            return this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ListadoresumenXinspector.class),
+                    userLogin.getCodempdefault(),
+                    filtro.getCodciclo(),
+                    filtro.getCodsuc(),
+                    filtro.getCodsector()     == null ? "%" : filtro.getCodsector(),
+                    filtro.getAnio(),
+                    filtro.getMes());
+
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage());
+        }
+    }
+
+    @Override
+    public List<MeterReadingSector> detalletomalectura_xinspector(Filtrodetalletomalectura_xinspector filtro, validar_login userLogin) {
+        try {
+            String query = "exec dbo.usp_vektors_detalletomalectura_xinspector ?,?,?,?,?,?,?";
+
+            List<MeterReadingSector> lecturas = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(MeterReadingSector.class),
+                    userLogin.getCodempdefault(),
+                    filtro.getCodciclo(),
+                    filtro.getCodsuc(),
+                    filtro.getCodsector()     == null ? "%" : filtro.getCodsector(),
+                    filtro.getAnio(),
+                    filtro.getMes(),
+                    filtro.getCodinspector());
+
+            if (!lecturas.isEmpty()) {
+                asignarCoordenadas(lecturas);
+            }
+
+            return lecturas;
+
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage());
+        }
+    }
+    @Override
     public MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?";
