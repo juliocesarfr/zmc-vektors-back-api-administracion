@@ -8,5 +8,8 @@ public class RepositorioExcepcion extends DataAccessException {
     public RepositorioExcepcion(String message) {
         super(message);
     }
+    public RepositorioExcepcion(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }
