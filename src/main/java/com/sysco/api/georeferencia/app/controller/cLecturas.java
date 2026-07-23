@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/vektors")
+@RequestMapping("/vektors-medicion")
 @RequiredArgsConstructor
 public class cLecturas {
     private final tokens_webflux tokenFunction;
