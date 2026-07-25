@@ -1,4 +1,5 @@
 package com.sysco.api.georeferencia.app.controller;
+import com.sysco.api.georeferencia.app.dto.cobranza.BuscarPreCorteRequest;
 import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorte;
 import com.sysco.api.georeferencia.app.dto.cobranza.FiltrarProgramaPrecorte;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
@@ -34,4 +35,22 @@ public class cClienteProgramaCore {
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }
+
+    @PostMapping("/programas/buscar")
+    public Mono<ResponseEntity<response_generic<ClientesProgramadosPreCorte>>> buscarPreCortePorCliente(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarPreCorteRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarPreCortePorCliente(
+                        request.getCodsuc(),
+                        request.getCodcliente(),
+                        request.getNroPrecorte(),
+                        userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Precorte encontrado"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
 }

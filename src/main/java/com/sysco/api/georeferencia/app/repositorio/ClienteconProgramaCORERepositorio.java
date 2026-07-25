@@ -39,7 +39,29 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
         }
     }
 
+    @Override
+    public ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin) {
+        try {
+            String query = "exec dbo.usp_vektors_buscar_precorte_por_cliente ?,?,?,?";
 
+            List<ClientesProgramadosPreCorte> resultado = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
+                    userLogin.getCodempdefault(),
+                    codsuc,
+                    codcliente,
+                    nroPrecorte);
+
+            if (!resultado.isEmpty()) {
+                asignarCoordenadas(resultado);
+                return resultado.get(0);
+            }
+
+            return null;
+
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage(), ex);
+        }
+    }
 
 
 
