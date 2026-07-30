@@ -95,7 +95,6 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
                                     rs.getObject("x_aco_agua", Double.class), rs.getObject("y_aco_agua", Double.class),
                                     rs.getObject("x_aco_alc", Double.class),  rs.getObject("y_aco_alc", Double.class)
                             });
-                    lotes.put(cod, rs.getString("capaloteslatylog"));
                 });
 
         lecturas.forEach(l -> {
@@ -104,15 +103,19 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
 
             Double[] xy = coords.get(cod);
             if (xy != null) {
-                l.setLon(xy[0]);                   l.setLat(xy[1]);
-                l.setLonpredio(xy[2]);             l.setLatpredio(xy[3]);
-                l.setLonagua(xy[4]);               l.setLatagua(xy[5]);
-                l.setLondesague(xy[6]);            l.setLatdesague(xy[7]);
-                l.setLonacometidaagua(xy[8]);      l.setLatacometidaagua(xy[9]);
-                l.setLonacometidadesague(xy[10]);  l.setLatacometidadesague(xy[11]);
+                l.setLon(xy[0]);
+                l.setLat(xy[1]);
+                l.setLonpredio(xy[2]);
+                l.setLatpredio(xy[3]);
+                l.setLonagua(xy[4]);
+                l.setLatagua(xy[5]);
+                l.setLondesague(xy[6]);
+                l.setLatdesague(xy[7]);
+                l.setLonacometidaagua(xy[8]);
+                l.setLatacometidaagua(xy[9]);
+                l.setLonacometidadesague(xy[10]);
+                l.setLatacometidadesague(xy[11]);
             }
-
-            l.setCapaloteslatylog(lotes.get(cod));
         });
     }
 

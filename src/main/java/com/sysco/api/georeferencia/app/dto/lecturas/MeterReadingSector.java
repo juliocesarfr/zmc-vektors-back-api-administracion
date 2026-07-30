@@ -117,5 +117,4 @@ public class MeterReadingSector {
     private Double latacometidaagua;
     private Double lonacometidadesague;
     private Double latacometidadesague;
-    private String capaloteslatylog;
 }

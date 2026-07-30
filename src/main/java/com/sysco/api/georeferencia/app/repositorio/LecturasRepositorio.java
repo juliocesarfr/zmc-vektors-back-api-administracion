@@ -145,7 +145,6 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                                     rs.getObject("x_aco_agua", Double.class), rs.getObject("y_aco_agua", Double.class),
                                     rs.getObject("x_aco_alc", Double.class),  rs.getObject("y_aco_alc", Double.class)
                             });
-                    lotes.put(cod, rs.getString("capaloteslatylog"));
                 });
 
         lecturas.forEach(l -> {
@@ -161,8 +160,6 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                 l.setLonacometidaagua(xy[8]);      l.setLatacometidaagua(xy[9]);
                 l.setLonacometidadesague(xy[10]);  l.setLatacometidadesague(xy[11]);
             }
-
-            l.setCapaloteslatylog(lotes.get(cod));
         });
     }
 }
