@@ -1,13 +1,11 @@
 package com.sysco.api.georeferencia.app.repositorio;
 
 import com.sysco.api.georeferencia.app.config.IGenericRepo;
-import com.sysco.api.georeferencia.app.dto.catastro.BuscarClienteActividadRequest;
-import com.sysco.api.georeferencia.app.dto.catastro.ClienteTipoActividad;
-import com.sysco.api.georeferencia.app.dto.catastro.FiltroPadronClientesTipoActividadRequest;
-
-
+import com.sysco.api.georeferencia.app.dto.vma.BuscarClienteVMARequest;
+import com.sysco.api.georeferencia.app.dto.vma.ClientesVMA;
+import com.sysco.api.georeferencia.app.dto.vma.FiltroPadronClientesVMARequest;
 import com.sysco.api.georeferencia.app.excepciones.RepositorioExcepcion;
-import com.sysco.api.georeferencia.app.interfaces.catastro.IClientesTipoActividad;
+import com.sysco.api.georeferencia.app.interfaces.vma.IClientesVMA;
 import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,44 +16,42 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ClientesTipoActividadRepositorio extends IGenericRepo implements IClientesTipoActividad {
+public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA {
 
     @Override
-    public List<ClienteTipoActividad> listarPadronActividad(FiltroPadronClientesTipoActividadRequest filtro, validar_login userLogin) {
+    public List<ClientesVMA> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_reporte_padron_clientes_tipo_actividad ?,?,?,?,?,?,?,?,?,?";
+            String query = "exec dbo.usp_vektors_reporte_padronclientes_nodomestico ?,?,?,?,?,?,?,?,?";
 
-            List<ClienteTipoActividad> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClienteTipoActividad.class),
+            List<ClientesVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesVMA.class),
                     userLogin.getCodempdefault(),
-                    filtro.getCodciclo()     == null ? "%" : filtro.getCodciclo(),
-                    filtro.getCodsuc()       == null ? "%" : filtro.getCodsuc(),
-                    filtro.getCodsector()    == null ? "%" : filtro.getCodsector(),
-                    filtro.getEstservicio()  == null ? "%" : filtro.getEstservicio(),
+                    filtro.getCodciclo() == null ? "%" : filtro.getCodciclo(),
+                    filtro.getCodsuc() == null ? "%" : filtro.getCodsuc(),
+                    filtro.getCodsector() == null ? "%" : filtro.getCodsector(),
+                    filtro.getEstservicio() == null ? "%" : filtro.getEstservicio(),
                     filtro.getTiposervicio() == null ? "%" : filtro.getTiposervicio(),
-                    filtro.getCatetar()      == null ? "%" : filtro.getCatetar(),
-                    filtro.getUrbani()       == null ? "%" : filtro.getUrbani(),
-                    filtro.getTipousuario()  == null ? "%" : filtro.getTipousuario(),
-                    filtro.getActividad()    == null ? "%" : filtro.getActividad());
+                    filtro.getCatetar() == null ? "%" : filtro.getCatetar(),
+                    filtro.getTipousuario() == null ? "%" : filtro.getTipousuario(),
+                    filtro.getActividad() == null ? "%" : filtro.getActividad());
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadas(clientes);
             }
 
             return clientes;
-
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
         }
     }
 
     @Override
-    public ClienteTipoActividad buscarClienteActividad(BuscarClienteActividadRequest filtro, validar_login userLogin) {
+    public ClientesVMA buscarPadronClientesNoDomestico(BuscarClienteVMARequest filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_reporte_padron_clientes_tipo_actividad ?,?,?";
+            String query = "exec dbo.usp_vektors_buscar_padronclientes_nodomestico ?,?,?";
 
-            List<ClienteTipoActividad> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClienteTipoActividad.class),
+            List<ClientesVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesVMA.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
                     filtro.getCodcliente());
@@ -65,17 +61,15 @@ public class ClientesTipoActividadRepositorio extends IGenericRepo implements IC
                 return clientes.get(0);
             }
 
-            
             return null;
-
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
         }
     }
 
-    private void asignarCoordenadas(List<ClienteTipoActividad> clientes) throws Exception {
+    private void asignarCoordenadas(List<ClientesVMA> clientes) throws Exception {
         Long[] codigos = clientes.stream()
-                .map(ClienteTipoActividad::getCodcliente)
+                .map(ClientesVMA::getCodcliente)
                 .filter(java.util.Objects::nonNull)
                 .map(Integer::longValue)
                 .distinct()
