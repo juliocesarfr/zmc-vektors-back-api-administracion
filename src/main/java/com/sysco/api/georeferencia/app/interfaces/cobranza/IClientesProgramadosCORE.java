@@ -7,4 +7,6 @@ public interface IClientesProgramadosCORE {
 
     List<ClientesProgramadosPreCorte> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro,
                                                                 validar_login userLogin);
+
+    ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin);
 }

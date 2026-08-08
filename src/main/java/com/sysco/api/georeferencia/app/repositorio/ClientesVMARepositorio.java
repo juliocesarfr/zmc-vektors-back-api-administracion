@@ -1,9 +1,11 @@
 package com.sysco.api.georeferencia.app.repositorio;
+
 import com.sysco.api.georeferencia.app.config.IGenericRepo;
-import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorte;
-import com.sysco.api.georeferencia.app.dto.cobranza.FiltrarProgramaPrecorte;
+import com.sysco.api.georeferencia.app.dto.vma.BuscarClienteVMARequest;
+import com.sysco.api.georeferencia.app.dto.vma.ClientesVMA;
+import com.sysco.api.georeferencia.app.dto.vma.FiltroPadronClientesVMARequest;
 import com.sysco.api.georeferencia.app.excepciones.RepositorioExcepcion;
-import com.sysco.api.georeferencia.app.interfaces.cobranza.IClientesProgramadosCORE;
+import com.sysco.api.georeferencia.app.interfaces.vma.IClientesVMA;
 import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,60 +16,60 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ClienteconProgramaCORERepositorio extends IGenericRepo implements IClientesProgramadosCORE {
+public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA {
 
     @Override
-    public List<ClientesProgramadosPreCorte> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
+    public List<ClientesVMA> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_clientesenprecortesprogramados ?,?,?,?";
+            String query = "exec dbo.usp_vektors_reporte_padronclientes_nodomestico ?,?,?,?,?,?,?,?,?";
 
-            List<ClientesProgramadosPreCorte> core = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
+            List<ClientesVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesVMA.class),
                     userLogin.getCodempdefault(),
-                    filtro.getCodsuc(),
-                    filtro.getTipooperacion(),
-                    filtro.getNroprecorte());
+                    filtro.getCodciclo() == null ? "%" : filtro.getCodciclo(),
+                    filtro.getCodsuc() == null ? "%" : filtro.getCodsuc(),
+                    filtro.getCodsector() == null ? "%" : filtro.getCodsector(),
+                    filtro.getEstservicio() == null ? "%" : filtro.getEstservicio(),
+                    filtro.getTiposervicio() == null ? "%" : filtro.getTiposervicio(),
+                    filtro.getCatetar() == null ? "%" : filtro.getCatetar(),
+                    filtro.getTipousuario() == null ? "%" : filtro.getTipousuario(),
+                    filtro.getActividad() == null ? "%" : filtro.getActividad());
 
-            if (!core.isEmpty()) {
-                asignarCoordenadas(core);
+            if (!clientes.isEmpty()) {
+                asignarCoordenadas(clientes);
             }
 
-            return core;
-
+            return clientes;
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
         }
     }
 
     @Override
-    public ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin) {
+    public ClientesVMA buscarPadronClientesNoDomestico(BuscarClienteVMARequest filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_precorte_por_cliente ?,?,?,?";
+            String query = "exec dbo.usp_vektors_buscar_padronclientes_nodomestico ?,?,?";
 
-            List<ClientesProgramadosPreCorte> resultado = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
+            List<ClientesVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesVMA.class),
                     userLogin.getCodempdefault(),
-                    codsuc,
-                    codcliente,
-                    nroPrecorte);
+                    filtro.getCodsuc(),
+                    filtro.getCodcliente());
 
-            if (!resultado.isEmpty()) {
-                asignarCoordenadas(resultado);
-                return resultado.get(0);
+            if (!clientes.isEmpty()) {
+                asignarCoordenadas(clientes);
+                return clientes.get(0);
             }
 
             return null;
-
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
         }
     }
 
-
-
-    private void asignarCoordenadas(List<ClientesProgramadosPreCorte> lecturas) throws Exception {
-        Long[] codigos = lecturas.stream()
-                .map(ClientesProgramadosPreCorte::getCodcliente)
+    private void asignarCoordenadas(List<ClientesVMA> clientes) throws Exception {
+        Long[] codigos = clientes.stream()
+                .map(ClientesVMA::getCodcliente)
                 .filter(java.util.Objects::nonNull)
                 .map(Integer::longValue)
                 .distinct()
@@ -76,7 +78,6 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
         if (codigos.length == 0) return;
 
         Map<Long, Double[]> coords = new HashMap<>();
-        Map<Long, String>  lotes  = new HashMap<>();
 
         this.jTemplateGIS().query(
                 "SELECT * FROM fn_coordenadas_por_clientes(?)",
@@ -97,7 +98,7 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
                             });
                 });
 
-        lecturas.forEach(l -> {
+        clientes.forEach(l -> {
             if (l.getCodcliente() == null) return;
             long cod = l.getCodcliente().longValue();
 
@@ -118,6 +119,4 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
             }
         });
     }
-
-
 }

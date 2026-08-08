@@ -21,4 +21,9 @@ public class ClienteProgramaCoreService {
         return Mono.fromCallable(() -> this.repo.clientesconprogrmadosCore(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
+
+    public Mono<ClientesProgramadosPreCorte> buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.buscarPreCortePorCliente(codsuc, codcliente, nroPrecorte, userLogin))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
 }

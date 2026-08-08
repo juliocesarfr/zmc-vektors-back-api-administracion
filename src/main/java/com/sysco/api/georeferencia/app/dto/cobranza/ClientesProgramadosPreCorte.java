@@ -44,5 +44,4 @@ public class ClientesProgramadosPreCorte {
     private Double latacometidaagua;
     private Double lonacometidadesague;
     private Double latacometidadesague;
-    private String capaloteslatylog;
 }
