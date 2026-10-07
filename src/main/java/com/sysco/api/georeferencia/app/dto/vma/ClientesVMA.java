@@ -50,7 +50,7 @@ public class ClientesVMA {
     private String fechareapertura;
     private String feciniactividad;
     private Integer codiusua;
-    private Integer codclienteund;
+    private String codclienteund;
 
     // Coordenadas PostgreSQL
     private Double lon;
