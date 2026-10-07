@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class BuscarClienteVMARequest {
     private String codsuc;
-    private Integer codcliente;
+    private Long codcliente;
 }

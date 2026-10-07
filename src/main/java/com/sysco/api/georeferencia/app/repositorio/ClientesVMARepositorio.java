@@ -71,7 +71,6 @@ public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA
         Long[] codigos = clientes.stream()
                 .map(ClientesVMA::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 

@@ -10,7 +10,7 @@ import lombok.*;
 public class ClientesVMA {
     private String codemp;
     private String codsuc;
-    private Integer codcliente;
+    private Long codcliente;
     private String codciclo;
     private String propietario;
     private String codcalle;
@@ -49,7 +49,7 @@ public class ClientesVMA {
     private String fechacorte;
     private String fechareapertura;
     private String feciniactividad;
-    private Integer codiusua;
+    private Long codiusua;
     private String codclienteund;
 
     // Coordenadas PostgreSQL
