@@ -131,7 +131,7 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
         Map<Long, Double[]> coords = new HashMap<>();
 
         this.jTemplateGIS().query(
-                "SELECT * FROM fn_coordenadas_por_clientes(?)",
+                "SELECT * FROM public.fn_coordenadas_por_clientes(?::bigint[])",
                 ps -> {
                     Connection c = ps.getConnection();
                     ps.setArray(1, c.createArrayOf("bigint", codigos));
