@@ -7,6 +7,9 @@ import com.sysco.api.georeferencia.app.interfaces.lecturas.ILecturas;
 import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.stereotype.Repository;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +129,6 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
         if (codigos.length == 0) return;
 
         Map<Long, Double[]> coords = new HashMap<>();
-        Map<Long, String>  lotes  = new HashMap<>();
 
         this.jTemplateGIS().query(
                 "SELECT * FROM fn_coordenadas_por_clientes(?)",
@@ -134,10 +136,38 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                     Connection c = ps.getConnection();
                     ps.setArray(1, c.createArrayOf("bigint", codigos));
                 },
-                rs -> {
-                    long cod = rs.getLong("codcliente");
-                    coords.put(cod,
-                            new Double[]{
+                new org.springframework.jdbc.core.RowCallbackHandler() {
+                    private boolean metaDataLoaded = false;
+                    private boolean esFuncionNueva = false;
+
+                    @Override
+                    public void processRow(ResultSet rs) throws SQLException {
+                        // 1. Revisamos las columnas solo en la primera fila
+                        if (!metaDataLoaded) {
+                            ResultSetMetaData rsmd = rs.getMetaData();
+                            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+                                if (rsmd.getColumnName(i).equalsIgnoreCase("lon_cliente")) {
+                                    esFuncionNueva = true;
+                                    break;
+                                }
+                            }
+                            metaDataLoaded = true;
+                        }
+
+                        long cod = rs.getLong("codcliente");
+
+                        // 2. Extraemos los datos según la versión detectada
+                        if (esFuncionNueva) {
+                            coords.put(cod, new Double[]{
+                                    rs.getObject("lon_cliente", Double.class), rs.getObject("lat_cliente", Double.class),
+                                    null, null, // x_ficha, y_ficha no existen en la nueva
+                                    rs.getObject("lon_agua", Double.class),    rs.getObject("lat_agua", Double.class),
+                                    rs.getObject("lon_desague", Double.class), rs.getObject("lat_desague", Double.class),
+                                    null, null, // acometidas agua
+                                    null, null  // acometidas alcantarillado
+                            });
+                        } else {
+                            coords.put(cod, new Double[]{
                                     rs.getObject("lon", Double.class),        rs.getObject("lat", Double.class),
                                     rs.getObject("x_ficha", Double.class),    rs.getObject("y_ficha", Double.class),
                                     rs.getObject("x_agua", Double.class),     rs.getObject("y_agua", Double.class),
@@ -145,6 +175,8 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                                     rs.getObject("x_aco_agua", Double.class), rs.getObject("y_aco_agua", Double.class),
                                     rs.getObject("x_aco_alc", Double.class),  rs.getObject("y_aco_alc", Double.class)
                             });
+                        }
+                    }
                 });
 
         lecturas.forEach(l -> {
