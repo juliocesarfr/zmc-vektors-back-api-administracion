@@ -94,28 +94,47 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
     }
 
     @Override
-    public MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin) {
+    public List<MeterReadingSector> buscarLectura(BuscarLecturaRequest request, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?";
+            String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?,?";
+
+            int op = (request.getOp() != null) ? request.getOp() : 1;
+            String valor = (request.getValor() != null && !request.getValor().trim().isEmpty())
+                    ? request.getValor().trim()
+                    : (request.getNroSuministro() != null ? String.valueOf(request.getNroSuministro()) : "");
 
             List<MeterReadingSector> lecturas = this.jTemplateSIINCO(userLogin).query(query,
                     new BeanPropertyRowMapper<>(MeterReadingSector.class),
+                    op,
                     userLogin.getCodempdefault(),
-                    codsuc,
-                    anio,
-                    mes,
-                    nroSuministro);
+                    request.getCodsuc(),
+                    request.getAnio(),
+                    request.getMes(),
+                    valor);
 
             if (!lecturas.isEmpty()) {
                 asignarCoordenadas(lecturas);
-                return lecturas.get(0);
             }
 
-            return null;
+            return lecturas;
 
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
         }
+    }
+
+    @Override
+    public MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin) {
+        BuscarLecturaRequest request = BuscarLecturaRequest.builder()
+                .op(1)
+                .codsuc(codsuc)
+                .anio(anio)
+                .mes(mes)
+                .nroSuministro(nroSuministro)
+                .valor(nroSuministro != null ? String.valueOf(nroSuministro) : null)
+                .build();
+        List<MeterReadingSector> list = buscarLectura(request, userLogin);
+        return (list != null && !list.isEmpty()) ? list.get(0) : null;
     }
 
     private void asignarCoordenadas(List<MeterReadingSector> lecturas) throws Exception {

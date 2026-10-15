@@ -21,6 +21,11 @@ public class LecturasService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    public Mono<List<MeterReadingSector>> buscarLectura(BuscarLecturaRequest request, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.buscarLectura(request, userLogin))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
     public Mono<MeterReadingSector> buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.buscarLecturaPorSuministro(codsuc, anio, mes, nroSuministro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());

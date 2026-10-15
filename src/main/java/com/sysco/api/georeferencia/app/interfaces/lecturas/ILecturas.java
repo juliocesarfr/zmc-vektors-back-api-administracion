@@ -13,5 +13,6 @@ public interface ILecturas {
 
     List<MeterReadingSector> detalletomalectura_xinspector(Filtrodetalletomalectura_xinspector filtro,
                                                            validar_login userLogin);
+    List<MeterReadingSector> buscarLectura(BuscarLecturaRequest request, validar_login userLogin);
     MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin);
 }
