@@ -16,7 +16,7 @@ public class LecturasService {
     @Autowired
     private LecturasRepositorio repo;
 
-    public Mono<List<MeterReadingSector>> listarLecturas(FiltroLecturasRequest filtro, validar_login userLogin) {
+    public Mono<List<LecturaMapa>> listarLecturas(FiltroLecturasRequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.listarLecturas(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }

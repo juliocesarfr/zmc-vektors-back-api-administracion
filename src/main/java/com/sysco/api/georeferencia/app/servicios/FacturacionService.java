@@ -13,7 +13,9 @@ import com.zmc.sysco.master.clases.dto.validar_login;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
 @Service
 public class FacturacionService {
@@ -21,7 +23,7 @@ public class FacturacionService {
     @Autowired
     private FacturacionRepositorio repo;
 
-    public Mono<List<FacturacionVMA>> listarFacturacionVMA(FiltroFacturacionVMARequest filtro, validar_login userLogin) {
+    public Mono<List<FacturacionVMAMapa>> listarFacturacionVMA(FiltroFacturacionVMARequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.listarFacturacionVMA(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
@@ -31,7 +33,7 @@ public class FacturacionService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<List<FacturacionAltosConsumidores>> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin) {
+    public Mono<List<FacturacionAltosConsumidoresMapa>> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.listarFacturacionAltosConsumidores(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }

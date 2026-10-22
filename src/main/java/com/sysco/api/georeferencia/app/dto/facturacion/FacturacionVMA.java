@@ -1,5 +1,7 @@
 package com.sysco.api.georeferencia.app.dto.facturacion;
 
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+
 import lombok.*;
 import java.util.Date;
 
@@ -8,7 +10,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacturacionVMA {
+public class FacturacionVMA implements ConCoordenadas {
     private String codemp;
     private String codsuc;
     private String codciclo;

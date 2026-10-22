@@ -11,22 +11,26 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map;
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorteMapa;
 
 @Repository
 public class ClienteconProgramaCORERepositorio extends IGenericRepo implements IClientesProgramadosCORE {
 
     @Override
-    public List<ClientesProgramadosPreCorte> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
+    public List<ClientesProgramadosPreCorteMapa> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_clientesenprecortesprogramados ?,?,?,?";
 
-            List<ClientesProgramadosPreCorte> core = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
+            List<ClientesProgramadosPreCorteMapa> core = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesProgramadosPreCorteMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
                     filtro.getTipooperacion(),
-                    filtro.getNroprecorte());
+                    new SqlParameterValue(Types.INTEGER, filtro.getNroprecorte()));
 
             if (!core.isEmpty()) {
                 asignarCoordenadas(core);
@@ -48,8 +52,8 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
                     new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
                     userLogin.getCodempdefault(),
                     codsuc,
-                    codcliente,
-                    nroPrecorte);
+                    new SqlParameterValue(Types.INTEGER, codcliente),
+                    new SqlParameterValue(Types.INTEGER, nroPrecorte));
 
             if (!resultado.isEmpty()) {
                 asignarCoordenadas(resultado);
@@ -65,11 +69,11 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
 
 
 
-    private void asignarCoordenadas(List<ClientesProgramadosPreCorte> lecturas) throws Exception {
+    private void asignarCoordenadas(List<? extends ConCoordenadas> lecturas) throws Exception {
         Long[] codigos = lecturas.stream()
-                .map(ClientesProgramadosPreCorte::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
+                .map(Number::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 

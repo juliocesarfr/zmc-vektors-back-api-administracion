@@ -18,18 +18,23 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Consumer;
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
 @Repository
 public class FacturacionRepositorio extends IGenericRepo implements IFacturacionVMA, IFacturacionAltosConsumidores {
 
     @Override
-    public List<FacturacionVMA> listarFacturacionVMA(FiltroFacturacionVMARequest filtro, validar_login userLogin) {
+    public List<FacturacionVMAMapa> listarFacturacionVMA(FiltroFacturacionVMARequest filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_clientes_facturacion_vma ?,?,?,?";
 
-            List<FacturacionVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(FacturacionVMA.class),
+            List<FacturacionVMAMapa> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(FacturacionVMAMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc() == null ? "%" : filtro.getCodsuc(),
                     filtro.getAnio(),
@@ -56,7 +61,7 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
                     filtro.getCodsuc(),
                     filtro.getAnio(),
                     filtro.getMes(),
-                    filtro.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadasVMA(clientes);
@@ -71,12 +76,12 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
 
 
     @Override
-    public List<FacturacionAltosConsumidores> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin) {
+    public List<FacturacionAltosConsumidoresMapa> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_reporte_padronclientes_altocon2 ?,?,?,?,?,?,?,?,?";
 
-            List<FacturacionAltosConsumidores> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(FacturacionAltosConsumidores.class),
+            List<FacturacionAltosConsumidoresMapa> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(FacturacionAltosConsumidoresMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodciclo() == null ? "%" : filtro.getCodciclo(),
                     filtro.getCodsuc() == null ? "%" : filtro.getCodsuc(),
@@ -108,7 +113,7 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
                     filtro.getCodsuc(),
                     filtro.getAnio(),
                     filtro.getMes(),
-                    filtro.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadasAltosConsumidores(clientes);
@@ -123,11 +128,11 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
 
     // --- HELPER METODOS COORDENADAS ---
 
-    private void asignarCoordenadasVMA(List<FacturacionVMA> clientes) throws Exception {
+    private void asignarCoordenadasVMA(List<? extends ConCoordenadas> clientes) throws Exception {
         Long[] codigos = clientes.stream()
-                .map(FacturacionVMA::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
+                .map(Number::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 
@@ -155,11 +160,11 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
         });
     }
 
-    private void asignarCoordenadasAltosConsumidores(List<FacturacionAltosConsumidores> clientes) throws Exception {
+    private void asignarCoordenadasAltosConsumidores(List<? extends ConCoordenadas> clientes) throws Exception {
         Long[] codigos = clientes.stream()
-                .map(FacturacionAltosConsumidores::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
+                .map(Number::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 

@@ -1,5 +1,7 @@
 package com.sysco.api.georeferencia.app.dto.catastro;
 
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+
 import lombok.*;
 
 @Getter
@@ -7,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteTipoActividad {
+public class ClienteTipoActividad implements ConCoordenadas {
     private String codemp;
     private String codsuc;
     private Integer codcliente;

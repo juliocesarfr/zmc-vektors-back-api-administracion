@@ -11,7 +11,9 @@ import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.List;
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 @Repository
 public class ClienteCatastroRepositorio extends IGenericRepo implements IClienteCatastro {
@@ -25,7 +27,7 @@ public class ClienteCatastroRepositorio extends IGenericRepo implements ICliente
                     new BeanPropertyRowMapper<>(ClienteCatastroResponse.class),
                     userLogin.getCodempdefault(),
                     request.getCodsuc(),
-                    request.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, request.getCodcliente()));
 
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);

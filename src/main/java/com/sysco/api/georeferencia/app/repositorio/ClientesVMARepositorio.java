@@ -13,18 +13,22 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map;
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+import com.sysco.api.georeferencia.app.dto.vma.ClientesVMAMapa;
 
 @Repository
 public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA {
 
     @Override
-    public List<ClientesVMA> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
+    public List<ClientesVMAMapa> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_reporte_padronclientes_nodomestico ?,?,?,?,?,?,?,?,?";
 
-            List<ClientesVMA> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClientesVMA.class),
+            List<ClientesVMAMapa> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClientesVMAMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodciclo() == null ? "%" : filtro.getCodciclo(),
                     filtro.getCodsuc() == null ? "%" : filtro.getCodsuc(),
@@ -54,7 +58,7 @@ public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA
                     new BeanPropertyRowMapper<>(ClientesVMA.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
-                    filtro.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadas(clientes);
@@ -67,9 +71,9 @@ public class ClientesVMARepositorio extends IGenericRepo implements IClientesVMA
         }
     }
 
-    private void asignarCoordenadas(List<ClientesVMA> clientes) throws Exception {
+    private void asignarCoordenadas(List<? extends ConCoordenadas> clientes) throws Exception {
         Long[] codigos = clientes.stream()
-                .map(ClientesVMA::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
                 .distinct()
                 .toArray(Long[]::new);

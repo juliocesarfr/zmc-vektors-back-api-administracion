@@ -16,7 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteTipoActividadMapa;
 
 @Slf4j
 @RestController
@@ -27,7 +28,7 @@ public class cClientesTipoActividad {
     private final ClientesTipoActividadService service;
 
     @PostMapping("/clientes/listar")
-    public Mono<ResponseEntity<response_generic<List<ClienteTipoActividad>>>> listarPadronActividad(
+    public Mono<ResponseEntity<response_generic<List<ClienteTipoActividadMapa>>>> listarPadronActividad(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroPadronClientesTipoActividadRequest filtro
     ) {

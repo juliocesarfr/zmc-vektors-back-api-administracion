@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
 @Slf4j
 @RestController
@@ -28,7 +30,7 @@ public class cFacturacion {
     private final FacturacionService service;
 
     @PostMapping("/vma/listar")
-    public Mono<ResponseEntity<response_generic<List<FacturacionVMA>>>> listarFacturacionVMA(
+    public Mono<ResponseEntity<response_generic<List<FacturacionVMAMapa>>>> listarFacturacionVMA(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroFacturacionVMARequest filtro
     ) {
@@ -54,7 +56,7 @@ public class cFacturacion {
     }
 
     @PostMapping("/altos-consumidores/listar")
-    public Mono<ResponseEntity<response_generic<List<FacturacionAltosConsumidores>>>> listarFacturacionAltosConsumidores(
+    public Mono<ResponseEntity<response_generic<List<FacturacionAltosConsumidoresMapa>>>> listarFacturacionAltosConsumidores(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroFacturacionAltosConsumidoresRequest filtro
     ) {

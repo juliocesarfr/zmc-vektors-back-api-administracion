@@ -10,21 +10,25 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 @Repository
 public class LecturasRepositorio extends IGenericRepo implements ILecturas {
 
     @Override
-    public List<MeterReadingSector> listarLecturas(FiltroLecturasRequest filtro, validar_login userLogin) {
+    public List<LecturaMapa> listarLecturas(FiltroLecturasRequest filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_listar_lecturas ?,?,?,?,?,?,?,?,?,?,?";
 
-            List<MeterReadingSector> lecturas = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(MeterReadingSector.class),
+            // jTDS manda un null sin tipo como varchar y Sybase no lo convierte a int:
+            // el consumo vacío necesita el tipo explícito.
+            List<LecturaMapa> lecturas = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(LecturaMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
                     filtro.getCodsede(),
@@ -33,8 +37,8 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
                     filtro.getAnio(),
                     filtro.getMes(),
                     filtro.getEstadolectura() == null ? ""  : filtro.getEstadolectura(),
-                    filtro.getConsumoini(),
-                    filtro.getConsumofin(),
+                    new SqlParameterValue(Types.INTEGER, filtro.getConsumoini()),
+                    new SqlParameterValue(Types.INTEGER, filtro.getConsumofin()),
                     filtro.getTipopromedio());
 
             if (!lecturas.isEmpty()) {
@@ -137,11 +141,11 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
         return (list != null && !list.isEmpty()) ? list.get(0) : null;
     }
 
-    private void asignarCoordenadas(List<MeterReadingSector> lecturas) throws Exception {
+    private void asignarCoordenadas(List<? extends ConCoordenadas> lecturas) throws Exception {
         Long[] codigos = lecturas.stream()
-                .map(MeterReadingSector::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
+                .map(Number::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 

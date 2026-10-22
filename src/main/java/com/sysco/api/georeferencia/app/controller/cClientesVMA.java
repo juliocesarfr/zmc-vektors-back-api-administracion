@@ -14,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.vma.ClientesVMAMapa;
 
 @Slf4j
 @RestController
@@ -25,7 +26,7 @@ public class cClientesVMA {
     private final ClientesVMAService service;
 
     @PostMapping("/padron-clientes/listar")
-    public Mono<ResponseEntity<response_generic<List<ClientesVMA>>>> listarPadronClientesNoDomestico(
+    public Mono<ResponseEntity<response_generic<List<ClientesVMAMapa>>>> listarPadronClientesNoDomestico(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroPadronClientesVMARequest filtro
     ) {

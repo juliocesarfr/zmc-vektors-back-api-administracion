@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ILecturas {
 
-    List<MeterReadingSector> listarLecturas(FiltroLecturasRequest filtro,
+    List<LecturaMapa> listarLecturas(FiltroLecturasRequest filtro,
                                             validar_login userLogin);
     List<ListadoresumenXinspector> resumentomalectura_xinspectore(Filtroresumenxinspector filtro,
                                                                   validar_login userLogin);
