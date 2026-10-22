@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FacturacionAltosConsumidoresMapa implements ConCoordenadas {
+    private String codsuc;
     private Integer codcliente;
     private String propietario;
     private String direccion;

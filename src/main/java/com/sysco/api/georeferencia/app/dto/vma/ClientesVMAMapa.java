@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientesVMAMapa implements ConCoordenadas {
+    private String codsuc;
     private Long codcliente;
     private String propietario;
     private String codsector;
