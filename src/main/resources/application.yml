@@ -11,6 +11,14 @@ spring:
     timeout: 900
 
 server:
+  compression:
+    enabled: true
+    min-response-size: 2048
+    mime-types:
+      - application/json
+      - application/xml
+      - text/plain
+      - text/html
   port: 8845
 
 openapi:

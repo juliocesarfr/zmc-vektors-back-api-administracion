@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MeterReadingSector {
+public class MeterReadingSector implements ConCoordenadas {
     private String codemp;
     private String codciclo;
     private String anio;
@@ -117,5 +117,4 @@ public class MeterReadingSector {
     private Double latacometidaagua;
     private Double lonacometidadesague;
     private Double latacometidadesague;
-    private String capaloteslatylog;
 }

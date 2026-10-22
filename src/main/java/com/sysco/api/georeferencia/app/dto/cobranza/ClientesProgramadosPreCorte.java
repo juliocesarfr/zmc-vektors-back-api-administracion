@@ -1,10 +1,12 @@
 package com.sysco.api.georeferencia.app.dto.cobranza;
+
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
 @lombok.AllArgsConstructor
 @lombok.NoArgsConstructor
 @lombok.Getter
 @lombok.Setter
 @lombok.Builder
-public class ClientesProgramadosPreCorte {
+public class ClientesProgramadosPreCorte implements ConCoordenadas {
     private String codemp,codsuc;
     private Integer codcliente;
     private String codciclo,codsector,codmza,nrolote,nrosublote,propietario,estadoservicio,fechaprorroga,telefono;
@@ -44,5 +46,4 @@ public class ClientesProgramadosPreCorte {
     private Double latacometidaagua;
     private Double lonacometidadesague;
     private Double latacometidadesague;
-    private String capaloteslatylog;
 }

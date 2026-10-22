@@ -8,8 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BuscarLecturaRequest {
+    private Integer op;            // 1: Suministro, 2: DNI/RUC, 3: Nombres
     private String codsuc;
     private String anio;
     private String mes;
-    private Integer nroSuministro;
+    private Object nroSuministro;  // Compatibilidad hacia atrás (acepta numérico o texto)
+    private String valor;          // Valor buscado (código, DNI/RUC o nombres)
 }

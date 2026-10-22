@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Scripts SQL con permisos (grant): no van al repositorio ###
+sql/

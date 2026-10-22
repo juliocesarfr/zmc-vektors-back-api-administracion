@@ -25,7 +25,7 @@ public class cLecturas {
     private final LecturasService service;
 
     @PostMapping("/lecturas/listar")
-    public Mono<ResponseEntity<response_generic<List<MeterReadingSector>>>> listarLecturas(
+    public Mono<ResponseEntity<response_generic<List<LecturaMapa>>>> listarLecturas(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroLecturasRequest filtro
     ) {
@@ -38,17 +38,12 @@ public class cLecturas {
     }
 
     @PostMapping("/lecturas/buscar")
-    public Mono<ResponseEntity<response_generic<MeterReadingSector>>> buscarLectura(
+    public Mono<ResponseEntity<response_generic<List<MeterReadingSector>>>> buscarLectura(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody BuscarLecturaRequest request
     ) {
         return this.tokenFunction.DecodeToken(authHeader)
-                .flatMap(userLogin -> this.service.buscarLecturaPorSuministro(
-                        request.getCodsuc(),
-                        request.getAnio(),
-                        request.getMes(),
-                        request.getNroSuministro(),
-                        userLogin))
+                .flatMap(userLogin -> this.service.buscarLectura(request, userLogin))
                 .flatMap(GenericoExcepcion::success)
                 .doOnSuccess(response -> log.info("Operación exitosa: Lectura encontrada"))
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))

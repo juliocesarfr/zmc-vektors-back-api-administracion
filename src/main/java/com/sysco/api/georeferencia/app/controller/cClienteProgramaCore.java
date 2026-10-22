@@ -1,4 +1,5 @@
 package com.sysco.api.georeferencia.app.controller;
+import com.sysco.api.georeferencia.app.dto.cobranza.BuscarPreCorteRequest;
 import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorte;
 import com.sysco.api.georeferencia.app.dto.cobranza.FiltrarProgramaPrecorte;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
@@ -12,7 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorteMapa;
 
 @Slf4j
 @RestController
@@ -23,7 +25,7 @@ public class cClienteProgramaCore {
     private final ClienteProgramaCoreService service;
 
     @PostMapping("/programas/listar")
-    public Mono<ResponseEntity<response_generic<List<ClientesProgramadosPreCorte>>>> listarclientesconprogrmadosCore(
+    public Mono<ResponseEntity<response_generic<List<ClientesProgramadosPreCorteMapa>>>> listarclientesconprogrmadosCore(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltrarProgramaPrecorte filtro
     ) {
@@ -34,4 +36,22 @@ public class cClienteProgramaCore {
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }
+
+    @PostMapping("/programas/buscar")
+    public Mono<ResponseEntity<response_generic<ClientesProgramadosPreCorte>>> buscarPreCortePorCliente(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarPreCorteRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarPreCortePorCliente(
+                        request.getCodsuc(),
+                        request.getCodcliente(),
+                        request.getNroPrecorte(),
+                        userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Precorte encontrado"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
 }

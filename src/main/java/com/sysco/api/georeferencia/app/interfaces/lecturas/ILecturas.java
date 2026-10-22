@@ -6,12 +6,13 @@ import java.util.List;
 
 public interface ILecturas {
 
-    List<MeterReadingSector> listarLecturas(FiltroLecturasRequest filtro,
+    List<LecturaMapa> listarLecturas(FiltroLecturasRequest filtro,
                                             validar_login userLogin);
     List<ListadoresumenXinspector> resumentomalectura_xinspectore(Filtroresumenxinspector filtro,
                                                                   validar_login userLogin);
 
     List<MeterReadingSector> detalletomalectura_xinspector(Filtrodetalletomalectura_xinspector filtro,
                                                            validar_login userLogin);
+    List<MeterReadingSector> buscarLectura(BuscarLecturaRequest request, validar_login userLogin);
     MeterReadingSector buscarLecturaPorSuministro(String codsuc, String anio, String mes, Integer nroSuministro, validar_login userLogin);
 }
