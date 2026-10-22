@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FacturacionVMAMapa implements ConCoordenadas {
+    private String codsuc;
     private Integer codcliente;
     private String codsector;
     private String propietario;
