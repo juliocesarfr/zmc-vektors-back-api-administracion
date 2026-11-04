@@ -35,3 +35,4 @@ public class ClienteRadioResponse {
     private Double lat;
     private Double distanciaMetros;
 }
+

@@ -12,3 +12,4 @@ public class BuscarClientesRadioRequest {
     private Double lon;
     private Double radioMetros;
 }
+

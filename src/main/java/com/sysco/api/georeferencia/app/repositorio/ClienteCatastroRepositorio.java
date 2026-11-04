@@ -172,7 +172,7 @@ public class ClienteCatastroRepositorio extends IGenericRepo implements ICliente
             String codsuc = val(request.getCodsuc());
 
             // 3. Consultar Sybase para obtener datos comerciales
-            String querySybase = "exec dbo.usp_vektors_buscar_clientes_por_codigos ?,?,?";
+            String querySybase = "exec dbo.usp_vektors_buscar_clientes_por_codigo ?,?,?";
 
             List<ClienteRadioResponse> resultados = this.jTemplateSIINCO(userLogin).query(
                     querySybase,
@@ -214,6 +214,7 @@ public class ClienteCatastroRepositorio extends IGenericRepo implements ICliente
                 .map(BusquedaAvanzadaClienteResponse::getCodcliente)
                 .filter(java.util.Objects::nonNull)
                 .map(Integer::longValue)
+                .distinct()
                 .distinct()
                 .toArray(Long[]::new);
 
