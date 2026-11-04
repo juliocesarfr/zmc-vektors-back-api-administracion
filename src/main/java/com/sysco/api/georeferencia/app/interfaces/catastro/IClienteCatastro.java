@@ -1,9 +1,11 @@
 package com.sysco.api.georeferencia.app.interfaces.catastro;
 
 import com.sysco.api.georeferencia.app.dto.catastro.BuscarClienteCatastroRequest;
+import com.sysco.api.georeferencia.app.dto.catastro.BuscarClientesRadioRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClienteResponse;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClientesRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.ClienteCatastroResponse;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteRadioResponse;
 import com.zmc.sysco.master.clases.dto.validar_login;
 
 import java.util.List;
@@ -11,4 +13,5 @@ import java.util.List;
 public interface IClienteCatastro {
     List<ClienteCatastroResponse> buscarClienteCatastro(BuscarClienteCatastroRequest request, validar_login userLogin);
     List<BusquedaAvanzadaClienteResponse> busquedaAvanzadaClientes(BusquedaAvanzadaClientesRequest request, validar_login userLogin);
+    List<ClienteRadioResponse> buscarClientesPorRadio(BuscarClientesRadioRequest request, validar_login userLogin);
 }

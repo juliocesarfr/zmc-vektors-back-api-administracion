@@ -1,9 +1,11 @@
 package com.sysco.api.georeferencia.app.controller;
 
 import com.sysco.api.georeferencia.app.dto.catastro.BuscarClienteCatastroRequest;
+import com.sysco.api.georeferencia.app.dto.catastro.BuscarClientesRadioRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClienteResponse;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClientesRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.ClienteCatastroResponse;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteRadioResponse;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
 import com.sysco.api.georeferencia.app.seguridad.tokens_webflux;
 import com.sysco.api.georeferencia.app.servicios.ClienteCatastroService;
@@ -47,6 +49,19 @@ public class cClienteCatastro {
                 .flatMap(userLogin -> this.service.busquedaAvanzadaClientes(request, userLogin))
                 .flatMap(GenericoExcepcion::success)
                 .doOnSuccess(response -> log.info("Operación exitosa: Búsqueda avanzada de clientes completada"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/clientes/por-radio")
+    public Mono<ResponseEntity<response_generic<List<ClienteRadioResponse>>>> buscarClientesPorRadio(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarClientesRadioRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarClientesPorRadio(request, userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Clientes por radio encontrados"))
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }

@@ -1,9 +1,11 @@
 package com.sysco.api.georeferencia.app.servicios;
 
 import com.sysco.api.georeferencia.app.dto.catastro.BuscarClienteCatastroRequest;
+import com.sysco.api.georeferencia.app.dto.catastro.BuscarClientesRadioRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClienteResponse;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClientesRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.ClienteCatastroResponse;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteRadioResponse;
 import com.sysco.api.georeferencia.app.repositorio.ClienteCatastroRepositorio;
 import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,12 @@ public class ClienteCatastroService {
     public Mono<List<BusquedaAvanzadaClienteResponse>> busquedaAvanzadaClientes(
             BusquedaAvanzadaClientesRequest request, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.busquedaAvanzadaClientes(request, userLogin))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<List<ClienteRadioResponse>> buscarClientesPorRadio(
+            BuscarClientesRadioRequest request, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.buscarClientesPorRadio(request, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }

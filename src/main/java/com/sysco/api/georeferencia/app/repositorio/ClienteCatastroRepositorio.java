@@ -2,16 +2,24 @@ package com.sysco.api.georeferencia.app.repositorio;
 
 import com.sysco.api.georeferencia.app.config.IGenericRepo;
 import com.sysco.api.georeferencia.app.dto.catastro.BuscarClienteCatastroRequest;
+import com.sysco.api.georeferencia.app.dto.catastro.BuscarClientesRadioRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClienteResponse;
 import com.sysco.api.georeferencia.app.dto.catastro.BusquedaAvanzadaClientesRequest;
 import com.sysco.api.georeferencia.app.dto.catastro.ClienteCatastroResponse;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteRadioResponse;
 import com.sysco.api.georeferencia.app.excepciones.RepositorioExcepcion;
 import com.sysco.api.georeferencia.app.interfaces.catastro.IClienteCatastro;
 import com.zmc.sysco.master.clases.dto.validar_login;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class ClienteCatastroRepositorio extends IGenericRepo implements IClienteCatastro {
@@ -99,6 +107,95 @@ public class ClienteCatastroRepositorio extends IGenericRepo implements ICliente
             }
 
             return clientes;
+
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public List<ClienteRadioResponse> buscarClientesPorRadio(BuscarClientesRadioRequest request, validar_login userLogin) {
+        try {
+            if (request == null || request.getLat() == null || request.getLon() == null) {
+                return Collections.emptyList();
+            }
+
+            double radio = (request.getRadioMetros() != null && request.getRadioMetros() > 0)
+                    ? request.getRadioMetros()
+                    : 100.0;
+
+            // 1. Consultar PostgreSQL (GIS) para obtener los suministros dentro del radio geográfico
+            String sqlPostgis = "SELECT codcliente, lon, lat, distancia_metros FROM public.fn_clientes_por_radio(?, ?, ?)";
+
+            Map<Long, Double[]> coordsDistMap = new HashMap<>();
+            List<Long> codigosList = new ArrayList<>();
+
+            this.jTemplateGIS().query(
+                    sqlPostgis,
+                    ps -> {
+                        ps.setDouble(1, request.getLat());
+                        ps.setDouble(2, request.getLon());
+                        ps.setDouble(3, radio);
+                    },
+                    rs -> {
+                        Long cod = rs.getObject("codcliente", Long.class);
+                        if (cod != null) {
+                            Double lon = rs.getObject("lon", Double.class);
+                            Double lat = rs.getObject("lat", Double.class);
+                            Double dist = rs.getObject("distancia_metros", Double.class);
+                            coordsDistMap.put(cod, new Double[]{lon, lat, dist});
+                            codigosList.add(cod);
+                        }
+                    }
+            );
+
+            if (codigosList.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            // 2. Convertir lista de códigos a CSV para Sybase ASE
+            String codigosCsv = codigosList.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+
+            if (codigosCsv.length() > 3900) {
+                int lastComma = codigosCsv.lastIndexOf(',', 3900);
+                if (lastComma > 0) {
+                    codigosCsv = codigosCsv.substring(0, lastComma);
+                }
+            }
+
+            String codemp = userLogin.getCodempdefault() != null ? userLogin.getCodempdefault() : "001";
+            String codsuc = val(request.getCodsuc());
+
+            // 3. Consultar Sybase para obtener datos comerciales
+            String querySybase = "exec dbo.usp_vektors_buscar_clientes_por_codigos ?,?,?";
+
+            List<ClienteRadioResponse> resultados = this.jTemplateSIINCO(userLogin).query(
+                    querySybase,
+                    new BeanPropertyRowMapper<>(ClienteRadioResponse.class),
+                    codemp,
+                    codsuc,
+                    codigosCsv
+            );
+
+            // 4. Mapear coordenadas y distancias calculadas por PostGIS a cada cliente
+            for (ClienteRadioResponse cli : resultados) {
+                if (cli.getCodcliente() != null && coordsDistMap.containsKey(cli.getCodcliente())) {
+                    Double[] data = coordsDistMap.get(cli.getCodcliente());
+                    cli.setLon(data[0]);
+                    cli.setLat(data[1]);
+                    cli.setDistanciaMetros(data[2]);
+                }
+            }
+
+            // 5. Ordenar por distancia ascendente
+            resultados.sort(Comparator.comparing(
+                    ClienteRadioResponse::getDistanciaMetros,
+                    Comparator.nullsLast(Double::compareTo)
+            ));
+
+            return resultados;
 
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);
