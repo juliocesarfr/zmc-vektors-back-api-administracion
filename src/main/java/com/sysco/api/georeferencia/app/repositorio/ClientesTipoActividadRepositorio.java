@@ -15,18 +15,22 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map;
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
+import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteTipoActividadMapa;
 
 @Repository
 public class ClientesTipoActividadRepositorio extends IGenericRepo implements IClientesTipoActividad {
 
     @Override
-    public List<ClienteTipoActividad> listarPadronActividad(FiltroPadronClientesTipoActividadRequest filtro, validar_login userLogin) {
+    public List<ClienteTipoActividadMapa> listarPadronActividad(FiltroPadronClientesTipoActividadRequest filtro, validar_login userLogin) {
         try {
             String query = "exec dbo.usp_vektors_reporte_padron_clientes_tipo_actividad ?,?,?,?,?,?,?,?,?,?";
 
-            List<ClienteTipoActividad> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(ClienteTipoActividad.class),
+            List<ClienteTipoActividadMapa> clientes = this.jTemplateSIINCO(userLogin).query(query,
+                    new BeanPropertyRowMapper<>(ClienteTipoActividadMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodciclo()     == null ? "%" : filtro.getCodciclo(),
                     filtro.getCodsuc()       == null ? "%" : filtro.getCodsuc(),
@@ -58,7 +62,7 @@ public class ClientesTipoActividadRepositorio extends IGenericRepo implements IC
                     new BeanPropertyRowMapper<>(ClienteTipoActividad.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
-                    filtro.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadas(clientes);
@@ -73,11 +77,11 @@ public class ClientesTipoActividadRepositorio extends IGenericRepo implements IC
         }
     }
 
-    private void asignarCoordenadas(List<ClienteTipoActividad> clientes) throws Exception {
+    private void asignarCoordenadas(List<? extends ConCoordenadas> clientes) throws Exception {
         Long[] codigos = clientes.stream()
-                .map(ClienteTipoActividad::getCodcliente)
+                .map(ConCoordenadas::getCodcliente)
                 .filter(java.util.Objects::nonNull)
-                .map(Integer::longValue)
+                .map(Number::longValue)
                 .distinct()
                 .toArray(Long[]::new);
 

@@ -10,7 +10,8 @@ import com.zmc.sysco.master.clases.dto.validar_login;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.vma.ClientesVMAMapa;
 
 @Service
 public class ClientesVMAService {
@@ -18,7 +19,7 @@ public class ClientesVMAService {
     @Autowired
     private ClientesVMARepositorio repo;
 
-    public Mono<List<ClientesVMA>> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
+    public Mono<List<ClientesVMAMapa>> listarPadronClientesNoDomestico(FiltroPadronClientesVMARequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.listarPadronClientesNoDomestico(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }

@@ -10,7 +10,8 @@ import com.zmc.sysco.master.clases.dto.validar_login;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.catastro.ClienteTipoActividadMapa;
 
 @Service
 public class ClientesTipoActividadService {
@@ -18,7 +19,7 @@ public class ClientesTipoActividadService {
     @Autowired
     private ClientesTipoActividadRepositorio repo;
 
-    public Mono<List<ClienteTipoActividad>> listarPadronActividad(FiltroPadronClientesTipoActividadRequest filtro, validar_login userLogin) {
+    public Mono<List<ClienteTipoActividadMapa>> listarPadronActividad(FiltroPadronClientesTipoActividadRequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.listarPadronActividad(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }

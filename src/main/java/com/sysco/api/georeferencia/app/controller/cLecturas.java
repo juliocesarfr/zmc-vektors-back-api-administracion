@@ -25,7 +25,7 @@ public class cLecturas {
     private final LecturasService service;
 
     @PostMapping("/lecturas/listar")
-    public Mono<ResponseEntity<response_generic<List<MeterReadingSector>>>> listarLecturas(
+    public Mono<ResponseEntity<response_generic<List<LecturaMapa>>>> listarLecturas(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltroLecturasRequest filtro
     ) {

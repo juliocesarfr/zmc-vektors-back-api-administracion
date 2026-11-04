@@ -5,9 +5,10 @@ import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumido
 import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionAltosConsumidoresRequest;
 import com.zmc.sysco.master.clases.dto.validar_login;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
 public interface IFacturacionAltosConsumidores {
-    List<FacturacionAltosConsumidores> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin);
+    List<FacturacionAltosConsumidoresMapa> listarFacturacionAltosConsumidores(FiltroFacturacionAltosConsumidoresRequest filtro, validar_login userLogin);
     FacturacionAltosConsumidores buscarFacturacionAltosConsumidores(BuscarFacturacionAltosConsumidoresRequest filtro, validar_login userLogin);
 }

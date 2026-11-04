@@ -13,7 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorteMapa;
 
 @Slf4j
 @RestController
@@ -24,7 +25,7 @@ public class cClienteProgramaCore {
     private final ClienteProgramaCoreService service;
 
     @PostMapping("/programas/listar")
-    public Mono<ResponseEntity<response_generic<List<ClientesProgramadosPreCorte>>>> listarclientesconprogrmadosCore(
+    public Mono<ResponseEntity<response_generic<List<ClientesProgramadosPreCorteMapa>>>> listarclientesconprogrmadosCore(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
             @RequestBody FiltrarProgramaPrecorte filtro
     ) {

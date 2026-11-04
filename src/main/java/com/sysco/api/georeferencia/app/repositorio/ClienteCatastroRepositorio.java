@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.sql.Types;
+import org.springframework.jdbc.core.SqlParameterValue;
+
 @Repository
 public class ClienteCatastroRepositorio extends IGenericRepo implements IClienteCatastro {
 
@@ -33,7 +36,7 @@ public class ClienteCatastroRepositorio extends IGenericRepo implements ICliente
                     new BeanPropertyRowMapper<>(ClienteCatastroResponse.class),
                     userLogin.getCodempdefault(),
                     request.getCodsuc(),
-                    request.getCodcliente());
+                    new SqlParameterValue(Types.INTEGER, request.getCodcliente()));
 
         } catch (Exception ex) {
             throw new RepositorioExcepcion(ex.getMessage(), ex);

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.List;
+import com.sysco.api.georeferencia.app.dto.cobranza.ClientesProgramadosPreCorteMapa;
 
 @Service
 public class ClienteProgramaCoreService {
@@ -17,7 +18,7 @@ public class ClienteProgramaCoreService {
     @Autowired
     private ClienteconProgramaCORERepositorio repo;
 
-    public Mono<List<ClientesProgramadosPreCorte>> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
+    public Mono<List<ClientesProgramadosPreCorteMapa>> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.clientesconprogrmadosCore(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
