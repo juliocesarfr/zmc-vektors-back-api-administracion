@@ -23,14 +23,15 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
     @Override
     public List<ClientesProgramadosPreCorteMapa> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_clientesenprecortesprogramados ?,?,?,?";
+            String query = "exec dbo.usp_vektors_clientesenprecortesprogramados ?,?,?,?,?";
 
             List<ClientesProgramadosPreCorteMapa> core = this.jTemplateSIINCO(userLogin).query(query,
                     new BeanPropertyRowMapper<>(ClientesProgramadosPreCorteMapa.class),
                     userLogin.getCodempdefault(),
                     filtro.getCodsuc(),
                     filtro.getTipooperacion(),
-                    new SqlParameterValue(Types.INTEGER, filtro.getNroprecorte()));
+                    new SqlParameterValue(Types.INTEGER, filtro.getNroprecorte()),
+                    new SqlParameterValue(Types.INTEGER, valorSupervisor(filtro.getSupervisor())));
 
             if (!core.isEmpty()) {
                 asignarCoordenadas(core);
@@ -43,17 +44,23 @@ public class ClienteconProgramaCORERepositorio extends IGenericRepo implements I
         }
     }
 
+    // 1 = cola de reaperturas del supervisor; cualquier otro valor (o sin valor) es el programa de siempre.
+    private int valorSupervisor(Integer supervisor) {
+        return Integer.valueOf(1).equals(supervisor) ? 1 : 0;
+    }
+
     @Override
-    public ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin) {
+    public ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, Integer supervisor, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_precorte_por_cliente ?,?,?,?";
+            String query = "exec dbo.usp_vektors_buscar_precorte_por_cliente ?,?,?,?,?";
 
             List<ClientesProgramadosPreCorte> resultado = this.jTemplateSIINCO(userLogin).query(query,
                     new BeanPropertyRowMapper<>(ClientesProgramadosPreCorte.class),
                     userLogin.getCodempdefault(),
                     codsuc,
                     new SqlParameterValue(Types.INTEGER, codcliente),
-                    new SqlParameterValue(Types.INTEGER, nroPrecorte));
+                    new SqlParameterValue(Types.INTEGER, nroPrecorte),
+                    new SqlParameterValue(Types.INTEGER, valorSupervisor(supervisor)));
 
             if (!resultado.isEmpty()) {
                 asignarCoordenadas(resultado);

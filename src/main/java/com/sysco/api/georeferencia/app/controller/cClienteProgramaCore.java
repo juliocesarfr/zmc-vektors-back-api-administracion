@@ -47,6 +47,7 @@ public class cClienteProgramaCore {
                         request.getCodsuc(),
                         request.getCodcliente(),
                         request.getNroPrecorte(),
+                        request.getSupervisor(),
                         userLogin))
                 .flatMap(GenericoExcepcion::success)
                 .doOnSuccess(response -> log.info("Operación exitosa: Precorte encontrado"))

@@ -23,8 +23,8 @@ public class ClienteProgramaCoreService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<ClientesProgramadosPreCorte> buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin) {
-        return Mono.fromCallable(() -> this.repo.buscarPreCortePorCliente(codsuc, codcliente, nroPrecorte, userLogin))
+    public Mono<ClientesProgramadosPreCorte> buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, Integer supervisor, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.buscarPreCortePorCliente(codsuc, codcliente, nroPrecorte, supervisor, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }

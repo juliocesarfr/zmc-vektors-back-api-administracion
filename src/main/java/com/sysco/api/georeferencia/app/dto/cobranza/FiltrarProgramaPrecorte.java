@@ -11,4 +11,6 @@ public class FiltrarProgramaPrecorte {
     private String codsuc;
     private Integer nroprecorte;
     private String tipooperacion;
+    // 1 = cola de reaperturas del supervisor (solo con tipooperacion 002); no usa nroprecorte.
+    private Integer supervisor;
 }

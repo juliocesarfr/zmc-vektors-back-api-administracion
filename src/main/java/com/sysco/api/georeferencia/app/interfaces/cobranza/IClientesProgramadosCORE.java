@@ -9,5 +9,5 @@ public interface IClientesProgramadosCORE {
     List<ClientesProgramadosPreCorteMapa> clientesconprogrmadosCore(FiltrarProgramaPrecorte filtro,
                                                                 validar_login userLogin);
 
-    ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, validar_login userLogin);
+    ClientesProgramadosPreCorte buscarPreCortePorCliente(String codsuc, Integer codcliente, Integer nroPrecorte, Integer supervisor, validar_login userLogin);
 }
