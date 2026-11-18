@@ -18,7 +18,8 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Consumer;
+
 import java.sql.Types;
 import org.springframework.jdbc.core.SqlParameterValue;
 import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
@@ -147,15 +148,22 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
             String catet = filtro.getCatet() == null ? "%" : filtro.getCatet();
 
             try {
-                String query = "exec dbo.usp_vektors_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
+                String query = "exec dbo.usp_sysco_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
                 clientes = this.jTemplateSIINCO(userLogin).query(query,
                         new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
                         codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
             } catch (Exception e) {
-                String fallbackQuery = "exec dbo.usp_sysco_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
-                clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery,
-                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
-                        codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+                try {
+                    String fallbackQuery = "exec dbo.usp_vektors_reporte_padron_clientes_principales ?,?,?,?,?,?,?,?,?";
+                    clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery,
+                            new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
+                            codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+                } catch (Exception e2) {
+                    String fallbackQuery2 = "exec dbo.usp_vektors_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
+                    clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery2,
+                            new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
+                            codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+                }
             }
 
             if (!clientes.isEmpty()) {
@@ -171,15 +179,28 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
     @Override
     public FacturacionSeguimientoComercial buscarFacturacionSeguimientoComercial(BuscarFacturacionSeguimientoComercialRequest filtro, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_padron_clientes_principales ?,?,?,?,?";
+            List<FacturacionSeguimientoComercial> clientes;
+            String codemp = userLogin.getCodempdefault() != null ? userLogin.getCodempdefault() : "001";
 
-            List<FacturacionSeguimientoComercial> clientes = this.jTemplateSIINCO(userLogin).query(query,
-                    new BeanPropertyRowMapper<>(FacturacionSeguimientoComercial.class),
-                    userLogin.getCodempdefault() != null ? userLogin.getCodempdefault() : "001",
-                    filtro.getCodsuc(),
-                    filtro.getAnio(),
-                    filtro.getMes(),
-                    new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+            try {
+                String query = "exec dbo.usp_vektors_buscar_padron_clientes_principales ?,?,?,?,?";
+                clientes = this.jTemplateSIINCO(userLogin).query(query,
+                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercial.class),
+                        codemp,
+                        filtro.getCodsuc(),
+                        filtro.getAnio(),
+                        filtro.getMes(),
+                        new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+            } catch (Exception e) {
+                String fallbackQuery = "exec dbo.usp_vektors_buscar_padronclientes_segcomer ?,?,?,?,?";
+                clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery,
+                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercial.class),
+                        codemp,
+                        filtro.getCodsuc(),
+                        filtro.getAnio(),
+                        filtro.getMes(),
+                        new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+            }
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadasAltosConsumidores(clientes);
