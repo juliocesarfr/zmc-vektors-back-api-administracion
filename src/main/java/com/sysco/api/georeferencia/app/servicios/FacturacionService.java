@@ -6,6 +6,10 @@ import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumido
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMA;
 import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionAltosConsumidoresRequest;
 import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionVMARequest;
+import com.sysco.api.georeferencia.app.dto.facturacion.BuscarFacturacionSeguimientoComercialRequest;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercial;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercialMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionSeguimientoComercialRequest;
 import com.sysco.api.georeferencia.app.repositorio.FacturacionRepositorio;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,7 @@ import com.zmc.sysco.master.clases.dto.validar_login;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
+import java.util.List;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
@@ -40,6 +44,16 @@ public class FacturacionService {
 
     public Mono<FacturacionAltosConsumidores> buscarFacturacionAltosConsumidores(BuscarFacturacionAltosConsumidoresRequest filtro, validar_login userLogin) {
         return Mono.fromCallable(() -> this.repo.buscarFacturacionAltosConsumidores(filtro, userLogin))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<List<FacturacionSeguimientoComercialMapa>> listarFacturacionSeguimientoComercial(FiltroFacturacionSeguimientoComercialRequest filtro, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.listarFacturacionSeguimientoComercial(filtro, userLogin))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<FacturacionSeguimientoComercial> buscarFacturacionSeguimientoComercial(BuscarFacturacionSeguimientoComercialRequest filtro, validar_login userLogin) {
+        return Mono.fromCallable(() -> this.repo.buscarFacturacionSeguimientoComercial(filtro, userLogin))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }

@@ -6,6 +6,10 @@ import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumido
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMA;
 import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionAltosConsumidoresRequest;
 import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionVMARequest;
+import com.sysco.api.georeferencia.app.dto.facturacion.BuscarFacturacionSeguimientoComercialRequest;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercial;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercialMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionSeguimientoComercialRequest;
 import com.sysco.api.georeferencia.app.excepciones.GenericoExcepcion;
 import com.sysco.api.georeferencia.app.seguridad.tokens_webflux;
 import com.sysco.api.georeferencia.app.servicios.FacturacionService;
@@ -17,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.List;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
 
@@ -77,6 +81,32 @@ public class cFacturacion {
                 .flatMap(userLogin -> this.service.buscarFacturacionAltosConsumidores(request, userLogin))
                 .flatMap(GenericoExcepcion::success)
                 .doOnSuccess(response -> log.info("Operación exitosa: Facturación de altos consumidores encontrada"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/seguimiento-comercial/listar")
+    public Mono<ResponseEntity<response_generic<List<FacturacionSeguimientoComercialMapa>>>> listarFacturacionSeguimientoComercial(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody FiltroFacturacionSeguimientoComercialRequest filtro
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.listarFacturacionSeguimientoComercial(filtro, userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Lista de facturación de seguimiento comercial obtenida"))
+                .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
+                .onErrorResume(GenericoExcepcion::error);
+    }
+
+    @PostMapping("/seguimiento-comercial/buscar")
+    public Mono<ResponseEntity<response_generic<FacturacionSeguimientoComercial>>> buscarFacturacionSeguimientoComercial(
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authHeader,
+            @RequestBody BuscarFacturacionSeguimientoComercialRequest request
+    ) {
+        return this.tokenFunction.DecodeToken(authHeader)
+                .flatMap(userLogin -> this.service.buscarFacturacionSeguimientoComercial(request, userLogin))
+                .flatMap(GenericoExcepcion::success)
+                .doOnSuccess(response -> log.info("Operación exitosa: Facturación de seguimiento comercial encontrada"))
                 .doOnError(error -> log.error("Error en Operación: {}", error.getMessage()))
                 .onErrorResume(GenericoExcepcion::error);
     }

@@ -18,15 +18,21 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Consumer;
+
 import java.sql.Types;
 import org.springframework.jdbc.core.SqlParameterValue;
 import com.sysco.api.georeferencia.app.dto.lecturas.ConCoordenadas;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionVMAMapa;
 import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionAltosConsumidoresMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.BuscarFacturacionSeguimientoComercialRequest;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercial;
+import com.sysco.api.georeferencia.app.dto.facturacion.FacturacionSeguimientoComercialMapa;
+import com.sysco.api.georeferencia.app.dto.facturacion.FiltroFacturacionSeguimientoComercialRequest;
+import com.sysco.api.georeferencia.app.interfaces.facturacion.IFacturacionSeguimientoComercial;
 
 @Repository
-public class FacturacionRepositorio extends IGenericRepo implements IFacturacionVMA, IFacturacionAltosConsumidores {
+public class FacturacionRepositorio extends IGenericRepo implements IFacturacionVMA, IFacturacionAltosConsumidores, IFacturacionSeguimientoComercial {
 
     @Override
     public List<FacturacionVMAMapa> listarFacturacionVMA(FiltroFacturacionVMARequest filtro, validar_login userLogin) {
@@ -114,6 +120,87 @@ public class FacturacionRepositorio extends IGenericRepo implements IFacturacion
                     filtro.getAnio(),
                     filtro.getMes(),
                     new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+
+            if (!clientes.isEmpty()) {
+                asignarCoordenadasAltosConsumidores(clientes);
+                return clientes.get(0);
+            }
+
+            return null;
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage(), ex);
+        }
+    }
+
+
+    @Override
+    public List<FacturacionSeguimientoComercialMapa> listarFacturacionSeguimientoComercial(FiltroFacturacionSeguimientoComercialRequest filtro, validar_login userLogin) {
+        try {
+            List<FacturacionSeguimientoComercialMapa> clientes;
+            String codemp = userLogin.getCodempdefault() != null ? userLogin.getCodempdefault() : "001";
+            String codciclo = filtro.getCodciclo() == null ? "%" : filtro.getCodciclo();
+            String codsuc = filtro.getCodsuc() == null ? "%" : filtro.getCodsuc();
+            String codsector = filtro.getCodsector() == null ? "%" : filtro.getCodsector();
+            String codest = filtro.getCodest() == null ? "%" : filtro.getCodest();
+            String anio = filtro.getAnio() != null ? filtro.getAnio() : "%";
+            String mes = filtro.getMes() != null ? filtro.getMes() : "%";
+            String tipserv = filtro.getTipserv() == null ? "%" : filtro.getTipserv();
+            String catet = filtro.getCatet() == null ? "%" : filtro.getCatet();
+
+            try {
+                String query = "exec dbo.usp_sysco_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
+                clientes = this.jTemplateSIINCO(userLogin).query(query,
+                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
+                        codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+            } catch (Exception e) {
+                try {
+                    String fallbackQuery = "exec dbo.usp_vektors_reporte_padron_clientes_principales ?,?,?,?,?,?,?,?,?";
+                    clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery,
+                            new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
+                            codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+                } catch (Exception e2) {
+                    String fallbackQuery2 = "exec dbo.usp_vektors_reporte_padronclientes_segcomer ?,?,?,?,?,?,?,?,?";
+                    clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery2,
+                            new BeanPropertyRowMapper<>(FacturacionSeguimientoComercialMapa.class),
+                            codemp, codciclo, codsuc, codsector, codest, anio, mes, tipserv, catet);
+                }
+            }
+
+            if (!clientes.isEmpty()) {
+                asignarCoordenadasAltosConsumidores(clientes);
+            }
+
+            return clientes;
+        } catch (Exception ex) {
+            throw new RepositorioExcepcion(ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public FacturacionSeguimientoComercial buscarFacturacionSeguimientoComercial(BuscarFacturacionSeguimientoComercialRequest filtro, validar_login userLogin) {
+        try {
+            List<FacturacionSeguimientoComercial> clientes;
+            String codemp = userLogin.getCodempdefault() != null ? userLogin.getCodempdefault() : "001";
+
+            try {
+                String query = "exec dbo.usp_vektors_buscar_padron_clientes_principales ?,?,?,?,?";
+                clientes = this.jTemplateSIINCO(userLogin).query(query,
+                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercial.class),
+                        codemp,
+                        filtro.getCodsuc(),
+                        filtro.getAnio(),
+                        filtro.getMes(),
+                        new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+            } catch (Exception e) {
+                String fallbackQuery = "exec dbo.usp_vektors_buscar_padronclientes_segcomer ?,?,?,?,?";
+                clientes = this.jTemplateSIINCO(userLogin).query(fallbackQuery,
+                        new BeanPropertyRowMapper<>(FacturacionSeguimientoComercial.class),
+                        codemp,
+                        filtro.getCodsuc(),
+                        filtro.getAnio(),
+                        filtro.getMes(),
+                        new SqlParameterValue(Types.INTEGER, filtro.getCodcliente()));
+            }
 
             if (!clientes.isEmpty()) {
                 asignarCoordenadasAltosConsumidores(clientes);
