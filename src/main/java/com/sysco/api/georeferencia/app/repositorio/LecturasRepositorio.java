@@ -100,7 +100,7 @@ public class LecturasRepositorio extends IGenericRepo implements ILecturas {
     @Override
     public List<MeterReadingSector> buscarLectura(BuscarLecturaRequest request, validar_login userLogin) {
         try {
-            String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?,?";
+            String query = "exec dbo.usp_vektors_buscar_lecturas_nrosuministro ?,?,?,?,?";
 
             int op = (request.getOp() != null) ? request.getOp() : 1;
             String valor = (request.getValor() != null && !request.getValor().trim().isEmpty())
