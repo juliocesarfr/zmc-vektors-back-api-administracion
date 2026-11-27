@@ -40,7 +40,7 @@ public class ReclamoFundadoInfundadoMapa implements ConCoordenadas {
     private Integer diasplazo;
     private Integer diasresolucion;
     private Integer diasnotificacion;
-    // SP silencio positivo, FP fuera de plazo, SF notificado sin fecha, AL al límite, PN pendiente de notificar, EP en plazo, NA no aplica.
+    // SP silencio positivo, SN sin notificación registrada (vencido), FP fuera de plazo, SF notificado sin fecha, AL al límite, PN pendiente de notificar, EP en plazo, NA no aplica.
     private String estadoplazo;
     // 1 = fundado, 0 = infundado.
     private Integer resultado;
@@ -57,6 +57,8 @@ public class ReclamoFundadoInfundadoMapa implements ConCoordenadas {
     // SI, NO, NA (la conciliación no se notifica).
     private String notificacion;
     private Integer procesado;
+    // 1 = el reclamo tiene marcada una nulidad.
+    private Integer nulidad;
     private Integer reclamoscliente;
     private Integer cantidadrebajas;
     private Integer nrorebaja;
@@ -69,6 +71,9 @@ public class ReclamoFundadoInfundadoMapa implements ConCoordenadas {
     private String usuarioresolvio;
     private String fechainspeccion;
     private String resultadoinspeccion;
+    // Inspección interna (texto recortado a 300) y externa (observación del medidor, recortada a 200).
+    private String observacioninspeccion;
+    private String observacionmedidor;
 
     // Coordenadas PostgreSQL
     private Double lon;
